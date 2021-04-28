@@ -8,23 +8,41 @@ function Content() {
     const [meterNumber, setmeterNumber] = useState('')
     const [amount, setAmount] = useState('')
     const [user, setUser] = useState([])
+    const vend = '15045d1d22'
 
+    // Generate random num 0f 12 digits
+    const nums = new Date().getTime().toString().split("")
+    const newString = nums.splice(1).join('')
+    const ref_id = parseInt(newString)
+    // const meter = 45030378983
+    const pub_key = 'cd904b0968cc9a2610e1e35353c53087'
+    const priv_key = 'e51d66c5bf278db944f51476f1fb15c6f1b3b9521d60b5eee90e124e920618246e68ee0140764a52255b06e89c463c365eb47ef4f479700e7422a1862937e2cf'
+    const crypto = require('crypto')
+
+    const combined_string = `${vend}|${ref_id}|${meterNumber}|${disco}|${pub_key}`
+    const hash = crypto.createHmac('sha1', priv_key)
+        .update(combined_string)
+        .digest('hex')
+
+    // fetch call for meter info
     const handleSubmit = (e) => {
         e.preventDefault()
-        // console.log(name, phone, meterType, disco, meterNumber, amount)
         setName('')
         setPhone('')
         setmeterNumber('')
         setmeterType('')
         setAmount('')
         setDisco('')
-        fetch(`https://jsonplaceholder.typicode.com/todos`)
-            .then(res => res.json())
-            .then(user => setUser(user))
-
-        // fetch(`https://irecharge.com.ng/pwr_api_sandbox/v2/get_meter_info.php?vendor_code=${vendCode}&reference_id=${uniqueRefId}&meter=${meterNumber}&disco=${disco}&response_format=json&hash=${generatedHash} `)
-        // .then(response=>response.json())
-        // .then(data=>data)
+        // console.log('submitted', ref_id)
+        fetch(`https://irecharge.com.ng/pwr_api_sandbox/v2/get_meter_info.php?vendor_code=${vend}&reference_id=${ref_id}&meter=${meterNumber}&disco=${disco}&response_format=json&hash=${hash} `, {
+            headers: {
+                'Content-Type': 'Application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type'
+            }
+        })
+            .then(response => response.json())
+            .then(data => console.log(data))
 
     }
     return (
@@ -37,7 +55,7 @@ function Content() {
                             <div className="input-group-prepend">
                                 <span className="input-group-text" id="inputGroupPrepend3">Enter Name</span>
                             </div>
-                            <input type="text" className="form-control" id="validationServerUsername" placeholder="" aria-describedby="inputGroupPrepend3" value={name} required onChange={(e) => setName(e.target.value)} />
+                            <input type="text" className="form-control" id="validationServerUsername" placeholder="" aria-describedby="inputGroupPrepend3" value={name} onChange={(e) => setName(e.target.value)} />
                             <div className="invalid-feedback">
 
                             </div>
@@ -49,7 +67,7 @@ function Content() {
                             <div className="input-group-prepend">
                                 <span className="input-group-text" id="inputGroupPrepend3">Phone</span>
                             </div>
-                            <input type="text" className="form-control" id="validationServerUsername" aria-describedby="inputGroupPrepend3" required value={phone} onChange={(e) => setPhone(e.target.value)} />
+                            <input type="text" className="form-control" id="validationServerUsername" aria-describedby="inputGroupPrepend3" value={phone} onChange={(e) => setPhone(e.target.value)} />
                             <div className="invalid-feedback">
 
                             </div>
@@ -97,7 +115,7 @@ function Content() {
                     </div>)}
                     <div className="col-9 mx-auto mb-3">
                         <label htmlFor="validationServer05">Meter Number</label>
-                        <input type="text" className="form-control " id="validationServer05" required value={meterNumber} onChange={(e) => setmeterNumber(e.target.value)} />
+                        <input type="number" className="form-control " id="validationServer05" required value={meterNumber} onChange={(e) => setmeterNumber(e.target.value)} />
                         <div className="invalid-feedback">
 
                         </div>
