@@ -7,11 +7,12 @@ body{
 
 ul{
   display:flex;
-  margin:20px 0;
+  margin:10px 0;
+  justify-content: space-around;
 }
 ul li{
   list-style-type:  none;
-  margin: 20px 10px;
+  margin: 10px 10px;
   cursor: pointer;
 }
 ul li a{
@@ -30,11 +31,15 @@ ul li a{
   font-size: 30px;  font-weight: bold;
 }
 .content{
-  margin: 3em  0 ;
+  margin: 2em  0 ;
   display:flex;
   justify-content: center;
   align-items: center;
 }
 label{
   font-weight:bold;
+}
+form{
+  background:#fff;
+  padding: 2em 0 0 0;
 }

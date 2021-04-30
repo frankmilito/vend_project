@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { PaystackButton } from "react-paystack"
 import { Button, Modal } from 'react-bootstrap'
+import Reciepts from './Reciepts'
+// import { Link } from "react-router-dom";
+
 
 
 function Content() {
@@ -11,19 +14,24 @@ function Content() {
     const [disco, setDisco] = useState('')
     const [meterNumber, setmeterNumber] = useState('')
     const [amount, setAmount] = useState('')
+    const [disabled, setDisabled] = useState(false)
     const [user, setUser] = useState({})
     const [show, setShow] = useState(false)
+    const [pow, setPow] = useState(false)
+    // let history = useHistory();
+
+    // const [showpay, setShowPay] = useState(false)
     const [refId, setRefId] = useState('')
     const [accessToken, setAccessToken] = useState('')
+    const [power, setPower] = useState({})
     const vend = '15045d1d22'
     const publicKey = "pk_test_363651192d1da6d2499e9047b2ae5b2bded3b338"
-    // const refId = 123456789557
 
     const componentProps = {
 
         email,
 
-        amount,
+        amount: amount * 100,
 
         metadata: {
 
@@ -35,11 +43,11 @@ function Content() {
 
         publicKey,
 
-        text: "Pay Now",
+        text: "Make Payment",
 
         onSuccess: () =>
 
-            alert("Thanks for doing business with us! Come back soon!!"),
+            getPower(),
 
         onClose: () => alert("Wait! Don't leave :("),
 
@@ -73,6 +81,8 @@ function Content() {
             setUser(users)
             setAccessToken(users.accessToken)
             console.log(users)
+            onShow()
+            setDisabled(false)
 
             // getPower()
             // alert('ok')
@@ -84,8 +94,7 @@ function Content() {
 
     // Vend for power
     const getPower = async () => {
-        console.log('power', user);
-        console.log(user.access_token)
+        hide()
 
         const combined_string = `${vend}|${refId}|${meterNumber}|${disco}|${amount}|${user.access_token}|${pub_key}`
         const hash = crypto.createHmac('sha1', priv_key)
@@ -94,7 +103,22 @@ function Content() {
         const response = await fetch(`https://irecharge.com.ng/pwr_api_sandbox/v2/vend_power.php?vendor_code=${vend}&reference_id=${refId}&meter=${meterNumber}&access_token=${user.access_token}&disco=${disco}&phone=${phone}&email=${email}&response_format=json&hash=${hash}&amount=${amount} `)
         const power = await response.json()
         console.log(user.access_token, vend, refId, meterNumber, disco, phone, email, hash, amount)
-        console.log(power)
+
+
+
+        // history.push('/receipt')
+        if (power.message === 'Successful') {
+            // onShow()
+            setPower(power)
+            // setPow(true)
+            localStorage.setItem("power", JSON.stringify(power));
+            window.location.reload()
+
+        } else {
+            <h1>Loading...</h1>
+        }
+
+
     }
     // fetch call for meter info
     const handleSubmit = () => {
@@ -104,13 +128,15 @@ function Content() {
         // setmeterType('')
         // setAmount('')
         // setDisco('')
+        setDisabled(true)
         getUsers()
     }
     // toggle modal
     const onShow = () => {
         setShow(true)
-        handleSubmit()
+        // handleSubmit()
     }
+
     const hide = () => {
         setShow(false)
     }
@@ -207,7 +233,7 @@ function Content() {
                             <div className="input-group-prepend">
                                 <span className="input-group-text" id="inputGroupPrepend3">₦</span>
                             </div>
-                            <input type="text" className="form-control" id="validationServerUsername" placeholder="" aria-describedby="inputGroupPrepend3" required value={amount} onChange={(e) => setAmount((e.target.value) * 100)} />
+                            <input type="text" className="form-control" id="validationServerUsername" placeholder="" aria-describedby="inputGroupPrepend3" required value={amount} onChange={(e) => setAmount(e.target.value)} />
                             <div className="invalid-feedback">
 
                             </div>
@@ -231,18 +257,41 @@ function Content() {
                 <div className="button form-group col-9 mx-auto mt-3 btn-block">
                     {/* <button className="btn btn-primary text-center mt-4" type="submit">Process Data</button> */}
 
-                    <Button onSubmit={handleSubmit} onClick={onShow}> Modal</Button>
-                    <Modal show={show} onHide={() => hide()}>
-                        <Modal.Header closeButton><h2>Confirm details</h2>
-                        </Modal.Header>
-                        <Modal.Body>
-                            Name: {user.customer.name ? user.customer.name : 'no customer'} <br></br>
-                            Address: { }
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <PaystackButton {...componentProps} />
-                        </Modal.Footer>
-                    </Modal>
+                    <Button disabled={disabled} onClick={handleSubmit}>{disabled ? 'Loading...' : 'Proceed'}</Button>
+                    {pow ? <Reciepts /> :
+                        <>
+                            <Modal show={show} onHide={() => hide()}>
+
+
+                                {/* <Modal.Header closeButton>
+                                    <h2>Confirm Payment</h2>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <label>Name: </label> {user?.customer?.name} <br></br>
+                                    <label>Address: </label> {power?.meter_token}<br></br>
+                                    <label>Units Purchased: </label> {power?.units}<br></br>
+                                    <label>Purchase Amount: </label> {amount}
+                                </Modal.Body>
+                                <Modal.Footer> */}
+                                {/* <PaystackButton className='btn btn-primary' {...componentProps} /> */}
+                                {/* <button onClick={getPower} className="btn-primary">Power</button>
+                                </Modal.Footer> */}
+
+                                <Modal.Header closeButton>
+                                    <h2>Confirm Details</h2>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <label>Name: </label> {user?.customer?.name} <br></br>
+                                    <label>Address: </label> {user?.customer?.address}<br></br>
+                                    <label>Purchase Amount: </label> {amount}
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <PaystackButton className='btn btn-primary' {...componentProps} />
+                                    {/* <button onClick={getPower} className="btn-primary">Power</button> */}
+                                </Modal.Footer>
+
+                            </Modal>
+                        </>}
 
                 </div>
                 <div>
