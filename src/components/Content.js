@@ -1,53 +1,122 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { PaystackButton } from "react-paystack"
+import { Button, Modal } from 'react-bootstrap'
+
 
 function Content() {
     const [name, setName] = useState('')
+    const [email, setEmail] = useState('')
     const [phone, setPhone] = useState('')
     const [meterType, setmeterType] = useState('')
     const [disco, setDisco] = useState('')
     const [meterNumber, setmeterNumber] = useState('')
     const [amount, setAmount] = useState('')
-    const [user, setUser] = useState([])
+    const [user, setUser] = useState({})
+    const [show, setShow] = useState(false)
+    const [refId, setRefId] = useState('')
+    const [accessToken, setAccessToken] = useState('')
     const vend = '15045d1d22'
+    const publicKey = "pk_test_363651192d1da6d2499e9047b2ae5b2bded3b338"
+    // const refId = 123456789557
+
+    const componentProps = {
+
+        email,
+
+        amount,
+
+        metadata: {
+
+            name,
+
+            phone,
+
+        },
+
+        publicKey,
+
+        text: "Pay Now",
+
+        onSuccess: () =>
+
+            alert("Thanks for doing business with us! Come back soon!!"),
+
+        onClose: () => alert("Wait! Don't leave :("),
+
+    }
 
     // Generate random num 0f 12 digits
-    const nums = new Date().getTime().toString().split("")
-    const newString = nums.splice(1).join('')
-    const ref_id = parseInt(newString)
+    useEffect(() => {
+        const nums = new Date().getTime().toString().split("")
+        const newString = nums.splice(1).join('')
+        let refId = parseInt(newString)
+        setRefId(refId)
+    }, [])
+
     // const meter = 45030378983
     const pub_key = 'cd904b0968cc9a2610e1e35353c53087'
     const priv_key = 'e51d66c5bf278db944f51476f1fb15c6f1b3b9521d60b5eee90e124e920618246e68ee0140764a52255b06e89c463c365eb47ef4f479700e7422a1862937e2cf'
     const crypto = require('crypto')
 
-    const combined_string = `${vend}|${ref_id}|${meterNumber}|${disco}|${pub_key}`
-    const hash = crypto.createHmac('sha1', priv_key)
-        .update(combined_string)
-        .digest('hex')
 
+
+    // Get meter number
+    const getUsers = async () => {
+        const combined_string = `${vend}|${refId}|${meterNumber}|${disco}|${pub_key}`
+        const hash = crypto.createHmac('sha1', priv_key)
+            .update(combined_string)
+            .digest('hex')
+        const res = await fetch(`https://irecharge.com.ng/pwr_api_sandbox/v2/get_meter_info.php?vendor_code=${vend}&reference_id=${refId}&meter=${meterNumber}&disco=${disco}&response_format=json&hash=${hash} `)
+        const users = await res.json()
+        console.log(hash)
+        if (users.status === '00') {
+            setUser(users)
+            setAccessToken(users.accessToken)
+            console.log(users)
+
+            // getPower()
+            // alert('ok')
+        } else {
+            console.log('erro')
+        }
+    }
+
+
+    // Vend for power
+    const getPower = async () => {
+        console.log('power', user);
+        console.log(user.access_token)
+
+        const combined_string = `${vend}|${refId}|${meterNumber}|${disco}|${amount}|${user.access_token}|${pub_key}`
+        const hash = crypto.createHmac('sha1', priv_key)
+            .update(combined_string)
+            .digest('hex')
+        const response = await fetch(`https://irecharge.com.ng/pwr_api_sandbox/v2/vend_power.php?vendor_code=${vend}&reference_id=${refId}&meter=${meterNumber}&access_token=${user.access_token}&disco=${disco}&phone=${phone}&email=${email}&response_format=json&hash=${hash}&amount=${amount} `)
+        const power = await response.json()
+        console.log(user.access_token, vend, refId, meterNumber, disco, phone, email, hash, amount)
+        console.log(power)
+    }
     // fetch call for meter info
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        setName('')
-        setPhone('')
-        setmeterNumber('')
-        setmeterType('')
-        setAmount('')
-        setDisco('')
-        // console.log('submitted', ref_id)
-        fetch(`https://irecharge.com.ng/pwr_api_sandbox/v2/get_meter_info.php?vendor_code=${vend}&reference_id=${ref_id}&meter=${meterNumber}&disco=${disco}&response_format=json&hash=${hash} `, {
-            headers: {
-                'Content-Type': 'Application/json',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type'
-            }
-        })
-            .then(response => response.json())
-            .then(data => console.log(data))
-
+    const handleSubmit = () => {
+        // setName('')
+        // setPhone('')
+        // setmeterNumber('')
+        // setmeterType('')
+        // setAmount('')
+        // setDisco('')
+        getUsers()
+    }
+    // toggle modal
+    const onShow = () => {
+        setShow(true)
+        handleSubmit()
+    }
+    const hide = () => {
+        setShow(false)
     }
     return (
         <div className='content'>
-            <form onSubmit={handleSubmit}>
+            <form >
                 <div className="form-row">
                     <div className="col-9  mx-auto mb-3">
                         <label htmlFor="validationServerUsername">Your Name</label>
@@ -61,13 +130,25 @@ function Content() {
                             </div>
                         </div>
                     </div>
+                    <div className="col-9  mx-auto mb-3">
+                        <label htmlFor="validationServerEmail">Your Email</label>
+                        <div className="input-group">
+                            <div className="input-group-prepend">
+                                <span className="input-group-text" id="inputGroupPrepend4">Enter Email</span>
+                            </div>
+                            <input type="email" className="form-control" id="validationServerUsername" placeholder="" aria-describedby="inputGroupPrepend3" value={email} onChange={(e) => setEmail(e.target.value)} />
+                            <div className="invalid-feedback">
+
+                            </div>
+                        </div>
+                    </div>
                     <div className="col-9 mx-auto mb-3">
                         <label htmlFor="validationServerUsername">Your Phone Number</label>
                         <div className="input-group">
                             <div className="input-group-prepend">
                                 <span className="input-group-text" id="inputGroupPrepend3">Phone</span>
                             </div>
-                            <input type="text" className="form-control" id="validationServerUsername" aria-describedby="inputGroupPrepend3" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                            <input type="number" className="form-control" id="validationServerUsername" aria-describedby="inputGroupPrepend3" value={phone} onChange={(e) => setPhone(e.target.value)} />
                             <div className="invalid-feedback">
 
                             </div>
@@ -126,7 +207,7 @@ function Content() {
                             <div className="input-group-prepend">
                                 <span className="input-group-text" id="inputGroupPrepend3">₦</span>
                             </div>
-                            <input type="text" className="form-control" id="validationServerUsername" placeholder="" aria-describedby="inputGroupPrepend3" required value={amount} onChange={(e) => setAmount(e.target.value)} />
+                            <input type="text" className="form-control" id="validationServerUsername" placeholder="" aria-describedby="inputGroupPrepend3" required value={amount} onChange={(e) => setAmount((e.target.value) * 100)} />
                             <div className="invalid-feedback">
 
                             </div>
@@ -148,17 +229,23 @@ function Content() {
                     </div>
                 </div>
                 <div className="button form-group col-9 mx-auto mt-3 btn-block">
-                    <button className="btn btn-primary text-center mt-4" type="submit">Process Data</button>
+                    {/* <button className="btn btn-primary text-center mt-4" type="submit">Process Data</button> */}
+
+                    <Button onSubmit={handleSubmit} onClick={onShow}> Modal</Button>
+                    <Modal show={show} onHide={() => hide()}>
+                        <Modal.Header closeButton><h2>Confirm details</h2>
+                        </Modal.Header>
+                        <Modal.Body>
+                            Name: {user.customer.name ? user.customer.name : 'no customer'} <br></br>
+                            Address: { }
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <PaystackButton {...componentProps} />
+                        </Modal.Footer>
+                    </Modal>
+
                 </div>
                 <div>
-                    {user.map(use => {
-                        const { id, title } = use
-                        return (
-                            <div key={id}>
-                                <h1>{title}</h1>
-                            </div>
-                        )
-                    })}
                 </div>
             </form>
         </div>
