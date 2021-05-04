@@ -95,7 +95,7 @@ function Content() {
     // Vend for power
     const getPower = async () => {
         hide()
-
+        // genenerate hash
         const combined_string = `${vend}|${refId}|${meterNumber}|${disco}|${amount}|${user.access_token}|${pub_key}`
         const hash = crypto.createHmac('sha1', priv_key)
             .update(combined_string)
@@ -104,11 +104,8 @@ function Content() {
         const power = await response.json()
         console.log(user.access_token, vend, refId, meterNumber, disco, phone, email, hash, amount)
 
-
-
         // history.push('/receipt')
         if (power.message === 'Successful') {
-            // onShow()
             setPower(power)
             // setPow(true)
             localStorage.setItem("power", JSON.stringify(power));
@@ -255,27 +252,10 @@ function Content() {
                     </div>
                 </div>
                 <div className="button form-group col-9 mx-auto mt-3 btn-block">
-                    {/* <button className="btn btn-primary text-center mt-4" type="submit">Process Data</button> */}
-
                     <Button disabled={disabled} onClick={handleSubmit}>{disabled ? 'Loading...' : 'Proceed'}</Button>
                     {pow ? <Reciepts /> :
                         <>
                             <Modal show={show} onHide={() => hide()}>
-
-
-                                {/* <Modal.Header closeButton>
-                                    <h2>Confirm Payment</h2>
-                                </Modal.Header>
-                                <Modal.Body>
-                                    <label>Name: </label> {user?.customer?.name} <br></br>
-                                    <label>Address: </label> {power?.meter_token}<br></br>
-                                    <label>Units Purchased: </label> {power?.units}<br></br>
-                                    <label>Purchase Amount: </label> {amount}
-                                </Modal.Body>
-                                <Modal.Footer> */}
-                                {/* <PaystackButton className='btn btn-primary' {...componentProps} /> */}
-                                {/* <button onClick={getPower} className="btn-primary">Power</button>
-                                </Modal.Footer> */}
 
                                 <Modal.Header closeButton>
                                     <h2>Confirm Details</h2>

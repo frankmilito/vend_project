@@ -8,7 +8,7 @@ function Reciepts() {
     }
     const detail = JSON.parse(localStorage.getItem("power"))
     return (
-        <div className="container w-50 d-flex align-items-center">
+        <div className="container w-50 d-flex align-items-center reciept">
             <div class="card ">
                 <div class="card-body text-center">
                     <div className="logo text-center mb-4">

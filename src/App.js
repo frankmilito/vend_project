@@ -9,14 +9,13 @@ import Reciepts from './components/Reciepts';
 function App() {
   const detail = JSON.parse(localStorage.getItem("power"))
   return (
-
-    <div className="container">
-      {detail?.message === 'Successful' ? <Reciepts /> : <>
-        <NavBar />
-        <Content /> <Footer /></>}
-
-    </div>
-
+    <Router>
+      <div className="container">
+        {detail?.message === 'Successful' ? <Route path='/reciepts' component={Reciepts} /> : <>
+          <NavBar />
+          <Content /> <Footer /></>}
+      </div>
+    </Router>
   );
 }
 
