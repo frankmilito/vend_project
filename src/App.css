@@ -19,9 +19,10 @@ ul li a{
   font-size: 20px;
   text-transform: capitalize;
   font-weight: bold;
+  color:#000;
 }
 .logo{
-  font-size: 40px;
+  font-size: 50px;
   font-weight: bold;
   font-style:italic ;
   color:rgb(0, 78, 0)
@@ -44,7 +45,6 @@ form{
   padding: 2em 0 0 0;
 }
 .reciept{
-  height: 100vh;
-
+  height: 100vh
 
 }

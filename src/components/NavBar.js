@@ -9,6 +9,8 @@ function NavBar() {
             </div>
             <ul>
                 <li><a href='/'>Home</a></li>
+                <li><a href='/'>Services</a></li>
+                <li><a href='/'>Buy Electricity</a></li>
                 <li><a href='/'>contact us</a></li>
                 <li><a href='/'>FAQ</a></li>
             </ul>
