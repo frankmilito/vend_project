@@ -20,7 +20,7 @@ function Reciepts() {
                             </div>
                             <h2 className="card-title mb-3">Payment Successful</h2>
                             <label className="mb-2">Address:</label>  {detail?.address}<br />
-                            <label className="mb-2">Amount:</label>  {detail?.amount}<br />
+                            <label className="mb-2">Amount:</label>  &#8358 {detail?.amount}<br />
                             <label className=" mb-2">Units Purchased:</label>  {detail.units} <br />
                             <label className=" mb-2">Meter Token:</label> {detail.meter_token} <br />
                             <label className=" mb-4">Reference No:</label> {detail.ref} <br />

@@ -144,7 +144,7 @@ function Content() {
 
     if (loading) {
         return (
-            <div className='container text-center mt-5'>
+            <div className='container text-center image '>
                 <img src={loadimg} alt="" className="img-fluid" />
             </div>
         )
@@ -185,10 +185,11 @@ function Content() {
                                 <span className="input-group-text" id="inputGroupPrepend3">Phone</span>
                             </div>
                             <input type="number" className="form-control" id="validationServerUsername" aria-describedby="inputGroupPrepend3" value={phone} onChange={(e) => setPhone(e.target.value)} />
-                            <div className="invalid-feedback">
-
-                            </div>
                         </div>
+                    </div>
+                    <div className="col-9 mx-auto mb-3">
+                        <label htmlFor="validationServer05">Meter Number</label>
+                        <input type="number" className="form-control " id="validationServer05" required value={meterNumber} onChange={(e) => setmeterNumber(e.target.value)} />
                     </div>
                     <div className="col-9 mx-auto mb-3">
                         <div className="form-group">
@@ -209,34 +210,28 @@ function Content() {
                             <label htmlFor="sel1">DisCo:</label>
                             <select className="form-control" id="sel1" value={disco} onChange={(e) => setDisco(e.target.value)}>
                                 <option>--Select DisCo--</option>
-                                <option>AEDC</option>
-                                <option>Eko_prepaid</option>
-                                <option>Ibadan_Disco_Prepaid</option>
-                                <option>Kano_Electricity_Disco</option>
-                                <option>Kaduna_Electricity_Disco</option>
-                                <option>PhED_Electricity</option>
-                                <option>Enugu_Electricity_Distribution_Prepaid</option>
+                                <option value='AEDC'>AEDC</option>
+                                <option value='Eko_prepaid'>EKO</option>
+                                <option value='Ibadan_Disco_Prepaid'>IBADAN</option>
+                                <option value='Kano_Electricity_Disco'>KANO</option>
+                                <option value='Kaduna_Electricity_Disco'>KADUNA</option>
+                                <option value='PhED_Electricity'>Porthacourt</option>
+                                <option value='Enugu_Electricity_Distribution_Prepaid'>EEDC</option>
                             </select>
                         </div>
-                    </div>) : (<div className="col-9 mx-auto mb-3">
+                    </div>) : meterType === 'POSTPAID' ? (<div className="col-9 mx-auto mb-3">
                         <div className="form-group">
                             <label htmlFor="sel1">DisCo:</label>
                             <select className="form-control" id="sel1" value={disco} onChange={(e) => setDisco(e.target.value)}>
                                 <option>--Select DisCo--</option>
-                                <option>AEDC_Postpaid</option>
-                                <option>Eko_Postpaid</option>
-                                <option>Kaduna_Electricity_Disco_Postpaid</option>
+                                <option value='AEDC_Postpaid'>AEDC</option>
+                                <option value='Eko_Postpaid'>EKO</option>
+                                <option value='Kaduna_Electricity_Disco_Postpaid'>KADUNA</option>
 
                             </select>
                         </div>
-                    </div>)}
-                    <div className="col-9 mx-auto mb-3">
-                        <label htmlFor="validationServer05">Meter Number</label>
-                        <input type="number" className="form-control " id="validationServer05" required value={meterNumber} onChange={(e) => setmeterNumber(e.target.value)} />
-                        <div className="invalid-feedback">
+                    </div>) : null}
 
-                        </div>
-                    </div>
                     <div className="col-9  mx-auto mb-3">
                         <label htmlFor="validationServerUsername">How much electricity do you want to buy</label>
                         <div className="input-group">
