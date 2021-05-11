@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
 import { PaystackButton } from "react-paystack"
 import { Button, Modal } from 'react-bootstrap'
 import Reciepts from './Reciepts'
+import loadimg from './load.gif'
+import NavBar from './NavBar'
 // import { Link } from "react-router-dom";
 
 
@@ -18,6 +21,7 @@ function Content() {
     const [user, setUser] = useState({})
     const [show, setShow] = useState(false)
     const [pow, setPow] = useState(false)
+    const [loading, setLoading] = useState(false)
     // let history = useHistory();
 
     // const [showpay, setShowPay] = useState(false)
@@ -45,12 +49,12 @@ function Content() {
 
         text: "Make Payment",
 
-        onSuccess: () =>
-
-            getPower(),
+        onSuccess: () => {
+            setLoading(true)
+            getPower()
+        },
 
         onClose: () => alert("Wait! Don't leave :("),
-
     }
 
     // Generate random num 0f 12 digits
@@ -91,9 +95,11 @@ function Content() {
         }
     }
 
-
+    // use history
+    const history = useHistory()
     // Vend for power
     const getPower = async () => {
+        setLoading(true)
         hide()
         // genenerate hash
         const combined_string = `${vend}|${refId}|${meterNumber}|${disco}|${amount}|${user.access_token}|${pub_key}`
@@ -107,14 +113,12 @@ function Content() {
         // history.push('/receipt')
         if (power.message === 'Successful') {
             setPower(power)
-            // setPow(true)
             localStorage.setItem("power", JSON.stringify(power));
-            window.location.reload()
-
-        } else {
-            <h1>Loading...</h1>
+            history.push('/reciepts')
+            setLoading(false)
+            // setPow(true)
+            // window.location.reload()
         }
-
 
     }
     // fetch call for meter info
@@ -137,8 +141,17 @@ function Content() {
     const hide = () => {
         setShow(false)
     }
+
+    if (loading) {
+        return (
+            <div className='container text-center mt-5'>
+                <img src={loadimg} alt="" className="img-fluid" />
+            </div>
+        )
+    }
     return (
         <div className='content'>
+            <NavBar />
             <form >
                 <div className="form-row">
                     <div className="col-9  mx-auto mb-3">
@@ -253,25 +266,25 @@ function Content() {
                 </div>
                 <div className="button form-group col-9 mx-auto mt-3 btn-block">
                     <Button disabled={disabled} onClick={handleSubmit}>{disabled ? 'Loading...' : 'Proceed'}</Button>
-                    {pow ? <Reciepts /> :
-                        <>
-                            <Modal show={show} onHide={() => hide()}>
 
-                                <Modal.Header closeButton>
-                                    <h2>Confirm Details</h2>
-                                </Modal.Header>
-                                <Modal.Body>
-                                    <label>Name: </label> {user?.customer?.name} <br></br>
-                                    <label>Address: </label> {user?.customer?.address}<br></br>
-                                    <label>Purchase Amount: </label> {amount}
-                                </Modal.Body>
-                                <Modal.Footer>
-                                    <PaystackButton className='btn btn-primary' {...componentProps} />
-                                    {/* <button onClick={getPower} className="btn-primary">Power</button> */}
-                                </Modal.Footer>
 
-                            </Modal>
-                        </>}
+                    <Modal show={show} onHide={() => hide()}>
+
+                        <Modal.Header closeButton>
+                            <h2>Confirm Details</h2>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <label>Name: </label> {user?.customer?.name} <br></br>
+                            <label>Address: </label> {user?.customer?.address}<br></br>
+                            <label>Purchase Amount: </label> {amount}
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <PaystackButton className='btn btn-primary' {...componentProps} />
+                            {/* <button onClick={getPower} className="btn-primary">Power</button> */}
+                        </Modal.Footer>
+
+                    </Modal>
+
 
                 </div>
                 <div>
@@ -279,6 +292,8 @@ function Content() {
             </form>
         </div>
     )
+
+
 }
 
 export default Content

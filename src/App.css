@@ -2,7 +2,8 @@ body{
   margin:0;
   padding:0;
   font-family: sans-serif;
-  background:#f4f4f4
+  background:#d8d8d8;
+  /* background: rgb(105, 105, 8); */
 }
 
 ul{
@@ -16,10 +17,17 @@ ul li{
   cursor: pointer;
 }
 ul li a{
-  font-size: 20px;
+  font-size: 22px;
   text-transform: capitalize;
   font-weight: bold;
   color:#000;
+  font-family: monospace;
+  text-decoration: none;
+  transition: 250ms;
+}
+ul li a:hover{
+  text-decoration: none;
+  color:rgb(0, 78, 0)
 }
 .logo{
   font-size: 50px;
@@ -28,7 +36,7 @@ ul li a{
   color:rgb(0, 78, 0)
 }
 .logo small{
-  color:rgb(158, 158, 6);
+  color:rgb(158, 6, 6);
   font-size: 30px;  font-weight: bold;
 }
 .content{
@@ -36,6 +44,7 @@ ul li a{
   display:flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 label{
   font-weight:bold;
